@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Score-Keeper App</title>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+
+      table {
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" style="text-align: center"></div>
+
+    <script type="text/babel">
+      let score = 0;
+      let wicket = 0;
+      let overWiseResult = [];
+      let ballWiseResult = [];
+      let hit = 0;
+      let inputRef = React.createRef();
+
+      function saveScore(num_wicket) {
+        ballWiseResult.push(num_wicket);
+        if (ballWiseResult.length == 6) {
+          overWiseResult.push(ballWiseResult);
+          ballWiseResult = [];
+          console.log(overWiseResult);
+        } else {
+          console.log(ballWiseResult);
+        }
+      }
+
+      //   function handleSubmit(event) {
+      //     event.preventDefault();
+      //     const commentInputContent =
+      //       document.getElementById("commentInput").textContent;
+      //     console.log(commentInputContent);
+      //     saveScore(commentInputContent);
+      //     const commentFieldBox = document.getElementById("commentField");
+      //     var y = document.createTextNode(commentInputContent);
+      //     commentFieldBox.appendChild(y);
+      //   }
+
+      function dotBall() {
+        if (wicket < 10) {
+          hit = "•";
+          rootElement.render(<App />);
+        }
+      }
+
+      function addScore(num) {
+        if (wicket < 10) {
+          hit = num;
+          rootElement.render(<App />);
+        }
+      }
+
+      function addWicket() {
+        if (wicket < 10) {
+          hit = "W";
+          rootElement.render(<App />);
+        }
+      }
+
+      const CurrBallResult = () => (
+        <>
+          <p>{hit}</p>
+          <p id="comment"></p>
+        </>
+      );
+
+      const BallResult = () => (
+        <>
+          {ballWiseResult.map((ball, index) => (
+            <span key={"Ball" + index}>
+              {" "}
+              {ball} &nbsp;&nbsp;&nbsp;
+              <br />
+            </span>
+          ))}
+        </>
+      );
+
+      const OverResult = () => (
+        <>
+          <table>
+            <thead>
+              <tr>
+                <th>Over/Balls</th>
+                <th>1st</th>
+                <th>2nd</th>
+                <th>3rd</th>
+                <th>4th</th>
+                <th>5th</th>
+                <th>6th</th>
+              </tr>
+            </thead>
+            <tbody>
+              {overWiseResult.map((over, overIndex) => (
+                <tr key={overIndex}>
+                  <th>Over {overIndex + 1}</th>
+                  {over.map((ball, ballIndex) => (
+                    <td key={ballIndex}>{ball}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      );
+
+      function handleSubmit(event) {
+        event.preventDefault();
+
+        if (wicket < 10) {
+          if (hit == "W") {
+            wicket++;
+          } else if (hit == "•") {
+          } else {
+            score += hit;
+          }
+
+          saveScore(<span>{`${hit} , ${inputRef.current.value}`}</span>);
+        }
+
+        hit = "•";
+        inputRef.current.value = "";
+
+        rootElement.render(<App />);
+      }
+
+      const Form = () => (
+        <>
+          <form onSubmit={handleSubmit}>
+            <input value={hit} />
+            <input ref={inputRef} placeholder="Add a comment" />
+            <button type="submit">Submit</button>
+          </form>
+        </>
+      );
+
+      const ScoreButtons = () => (
+        <div>
+          <button onClick={dotBall}>0</button>
+          <button onClick={() => addScore(1)}>1</button>
+          <button onClick={() => addScore(2)}>2</button>
+          <button onClick={() => addScore(3)}>3</button>
+          <button onClick={() => addScore(4)}>4</button>
+          <button onClick={() => addScore(6)}>6</button>
+          <button onClick={addWicket}>Wicket</button>
+        </div>
+      );
+
+      const App = () => (
+        <>
+          <h1>Score Keeper</h1>
+          <h2>
+            Score: {score}/{wicket}
+          </h2>
+          <ScoreButtons />
+          <br />
+          <Form />
+          <CurrBallResult />
+          <hr />
+          <BallResult />
+          <br />
+          <hr />
+          <OverResult />
+        </>
+      );
+
+      const rootElement = ReactDOM.createRoot(document.getElementById("root"));
+      rootElement.render(<App />);
+    </script>
+  </body>
+</html>
